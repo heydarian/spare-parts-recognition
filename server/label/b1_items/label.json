@@ -1,0 +1,92 @@
+{
+  "A00003": {
+    "name": "HP Printer",
+    "price": 788.50,
+    "quantity": 550
+  },
+  "B00001": {
+    "name": "MSI Mainboard",
+    "price": 1029.99,
+    "quantity": 300
+  },
+  "B00002": {
+    "name": "Seagate SCSI Hard Drive",
+    "price": 399.00,
+    "quantity": 163
+  },
+  "B00003": {
+    "name": "Samsung Meory Chip",
+    "price": 199.00,
+    "quantity": 773
+  },
+  "B00004": {
+    "name": "Nvidia Graphics Card",
+    "price": 580.00,
+    "quantity": 223
+  },
+  "C00003": {
+    "name": "Apple Magic Mouse",
+    "price": 699.00,
+    "quantity": 126
+  },
+  "C00004": {
+    "name": "Lenovo Desktop",
+    "price": 1625.00,
+    "quantity": 1340
+  },
+  "C00005": {
+    "name": "Apple Keyboard",
+    "price": 245.00,
+    "quantity": 582
+  },
+  "C00008": {
+    "name": "Lenovo ThinkVision Monitor",
+    "price": 785.00,
+    "quantity": 181
+  },
+  "C00009": {
+    "name": "Logitech Keyboard",
+    "price": 89.50,
+    "quantity": 1056
+  },
+  "C00010": {
+    "name": "Microsoft Mouse",
+    "price": 499.50,
+    "quantity": 89
+  },
+  "C00011": {
+    "name": "Microsoft Keyboard",
+    "price": 599.00,
+    "quantity": 53
+  },
+  "C00012": {
+    "name": "Logitech Lite Keyboard",
+    "price": 62.00,
+    "quantity": 119
+  },
+  "C00013": {
+    "name": "Microsoft Arc Mouse",
+    "price": 955.00,
+    "quantity": 32
+  },
+  "C00014": {
+    "name": "Logitech Mouse",
+    "price": 29.50,
+    "quantity": 553
+  },
+  "CW0001": {
+    "name": "Brass Micro cogwheel Module 0.2 Z",
+    "price": 3.95,
+    "quantity": 132
+  },
+  "CW0002": {
+    "name": "Traxxas 8258 - TRX-4",
+    "price": 4.95,
+    "quantity": 89
+  },
+  "CW0003": {
+    "name": "ELKA cogwheel Module 6",
+    "price": 5.95,
+    "quantity": 55
+  }
+}

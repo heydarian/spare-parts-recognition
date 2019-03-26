@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  spare-parts-recognition:
+    container_name: spare-parts-recognition
+    image: cyranochen/spare-parts-recognition:latest
+    ports:
+      - "8005:8000"
+      - "8085:8080"
+    volumes:
+      - ./server/log:/code/log
+      - ./server/sample:/code/sample
+      - ./server/label:/code/label
+      - ./server/config.py:/code/config.py
+    command: sh start.sh
+    # command: sh -c "npm start && python /code/main.py > /code/log/tornado.log"
