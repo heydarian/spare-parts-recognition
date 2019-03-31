@@ -1,15 +1,24 @@
 {
   "name": "spare-part-recognition",
   "version": "1.1.0",
-  "description": "the image handler of spare part recognition",
   "main": "index.js",
+  "description": "the image handler of spare part recognition",
+  "repository": {
+    "type": "git",
+    "url": "https://github.wdf.sap.corp/I345795/SparePartsRecognition"
+  },
   "scripts": {
-    "start": "nohup node index.js > ./log/server.log &",
+    "start": "nohup node index.js spare-part-recognition > ./logs/client.log &",
+    "stop": "pkill node index.js spare-part-recognition",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Cyrano Chen",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.4"
+    "bootstrap": "^4.3.1",
+    "express": "^4.16.4",
+    "jquery": "^3.3.1",
+    "popper.js": "^1.14.7",
+    "source-sans-pro": "^2.45.0"
   }
 }

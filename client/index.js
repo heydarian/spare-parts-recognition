@@ -11,6 +11,14 @@ const credentials = {
     cert: fs.readFileSync('./cert/client.crt', 'utf8')
 };
 
+// static files
+app.use('/', express.static('./pages'));
+app.use('/label', express.static('./pages/label.html'));
+
+app.use('/favicon', express.static('./favicon.ico'));
+app.use('/dist', express.static('./dist'));
+app.use('/node_modules', express.static('./node_modules'));
+
 // photo library file path
 app.use('/spr_img', express.static('../server/label/b1_items'));
 

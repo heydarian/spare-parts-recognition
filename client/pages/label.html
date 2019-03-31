@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Photo Finder for Events</title>
+    <link rel="shortcut icon" href="/favicon" />
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="/node_modules/source-sans-pro/source-sans-pro.css">
+
+    <link rel="stylesheet" href="/dist/css/main.css">
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="header clearfix">
+            <i class="logo-sap"></i>
+            <h1>PHOTO FINDER</h1>
+        </div>
+        <!-- Content Wrapper. Contains page content -->
+        <div class="container">
+            <div class="client-pc">
+                <div id="pnl-photo">
+                    <div id="img-preview"><img /></div>
+                </div>
+                <div class="button-bar">
+                    <input type="email" id="tb-email" placeholder="email address" />
+                    <button id="btn-send" class="btn btn-primary">Send all photos</button>
+                    <button id="btn-enter" class="btn btn-primary">Get all photos</button>
+                    <p id="pnl-tip" class="tip-download" style="display: none"></p>
+                </div>
+            </div>
+            <div id="photo-list" class="photo-list clearfix">
+            </div>
+        </div>
+    </div>
+    <!-- ./wrapper -->
+
+    <div class="modal" id="modal-qrcode">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body" style="text-align: center">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-photo">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body" style="text-align: center">
+                    <p>loading ...</p>
+                    <img />
+                    <p class="tip-download">&lt; long press photo to save it &gt;</p>
+                    <!-- <a target="_blank" class="btn btn-primary">Download Raw</a> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- REQUIRED SCRIPTS -->
+    <!-- jQuery -->
+    <script src="/node_modules/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- qrcode_js -->
+    <script src="/node_modules/qrcode_js/qrcode.min.js"></script>
+
+    <script src="/dist/js/main.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            // $(".container").css("margin-top", (window.innerHeight - $(".container").height()) / 2.5).fadeIn(
+            //     1000);
+
+            if (browser.versions.mobile || browser.versions.ios || browser.versions.android ||
+                browser.versions.iPhone) {
+                // mobile
+                $(".client-pc").addClass('client-mobile').removeClass('client-pc');
+                // no email service
+                if (!config.EMAIL_ACTIVE) {
+                    $(".client-mobile").find("p.tip-download").html("tip: <br /> click below thumbnail to get the raw photo").show();
+                    $(".client-mobile").find("button").hide();
+                    $(".client-mobile").find("input").hide();
+                }
+            } else if (!config.QRCODE_ACTIVE) {
+                // pc offline no qrcode, email service vaild
+                $(".client-pc").addClass('client-pc-offline').removeClass('client-pc');
+                if (!config.EMAIL_ACTIVE) {
+                    $(".client-pc-offline").find("button").hide();
+                    $(".client-pc-offline").find("input").hide();
+                }
+            }
+
+            _flag_done = false;
+
+            $("button#btn-send").on('click', function () {
+                if ($('input#tb-email').val() == '') {
+                    if (!browser.versions.mobile && !browser.versions.ios && !browser.versions
+                        .android &&
+                        !browser.versions.iPhone && !browser.versions.iPad) {
+                        // pc client
+                        window.location.href = '/';
+                        return;
+                    } else {
+                        alert("Please leave your correct email.");
+                        return;
+                    }
+                } else if ($('input#tb-email').val().indexOf('@') <= 0) {
+                    alert("Please leave your correct email.");
+                    return;
+                }
+
+                $.post(config.API_SERVER_PATH + '/register', {
+                        "session": session,
+                        "email": $('input#tb-email').val().trim(),
+                        "host": config.CLIENT_DOMAIN_URL_QRCODE
+                    },
+                    function (d, status) {
+                        if (status === "success" && d != null) {
+                            if (d.state === "success" && d.email) {
+                                alert(
+                                    'Mail sent successfully.'
+                                );
+                                if (!browser.versions.mobile && !browser.versions.ios &&
+                                    !browser.versions.android && !browser.versions.iPhone &&
+                                    !browser.versions.iPad) {
+                                    // pc client
+                                    window.location.href = '/';
+                                }
+                            } else {
+                                alert(
+                                    'Registered. You will get all photos from email in coming few weeks.'
+                                );
+                            }
+                        } else {
+                            alert('server unavailable');
+                        }
+                    }, "json");
+            });
+
+            $("button#btn-enter").on('click', function () {
+                $("#modal-qrcode").modal("show").find(".modal-dialog")
+                    .css("margin-top", (window.innerHeight - $("#modal-qrcode .modal-dialog")
+                    .height()) /
+                        2);
+                _flag_done = true;
+            });
+
+            $(document).on('keydown', function (e) {
+                if (e.which == 13) {
+                    if (_flag_done) {
+                        if (confirm('start over?')) {
+                            window.location.href = '/';
+                        } else {
+                            _flag_done = false;
+                            $("#modal-qrcode").modal("hide");
+                        }
+                    } else {
+                        if (config.QRCODE_ACTIVE) {
+                            $("button#btn-enter").click();
+                        } else {
+                            $("button#btn-send").click();
+                        }
+                    }
+                }
+            });
+
+            $("#pnl-photo>#img-preview>img").on('load', function () {
+                var base_size = $("#pnl-photo>#img-preview").width();
+                var $img = $("#pnl-photo>#img-preview>img");
+
+                $img.css("width", "auto").css("height", "auto").css("margin", "auto");
+
+                var w = $img.width(),
+                    h = $img.height();
+
+                if (w >= h) {
+                    $img.css("height", base_size);
+                    $img.css("margin-left", -(w * base_size / h - base_size) / 2);
+                } else if (w < h) {
+                    $img.css("width", base_size);
+                    $img.css("margin-top", -(h * base_size / w - base_size) / 2);
+                }
+            }).on('click', function () {
+                if (confirm('start over?')) {
+                    window.location.href = '/camera';
+                }
+            });
+
+            $("#modal-photo .modal-dialog img").on('load', function () {
+                $(this).fadeIn(1000);
+                $(this).prev('p').text($(this).prop('alt'));
+                $(this).next('a').prop('href', $(this).prop('longdesc'));
+            });
+
+            if (querystring('s') != undefined) {
+                var session = querystring('s');
+                $.getJSON(config.API_SERVER_PATH + '/photo/' + session, function (d, status) {
+                    if (status === "success" && d != null) {
+                        if (d.state === "success") {
+                            console.log(d);
+                            // set the src of sample image
+                            $("#pnl-photo>#img-preview>img").prop('src', '/sample/' + d.sample);
+
+                            // set the photo count on the buttons
+                            $("#btn-enter").text(`Get all ${d.data.length} Photos`);
+                            $("#btn-send").text(`Send all ${d.data.length} Photos`);
+                            $("#pnl-tip").html(`total <b>${d.data.length}</b> photos found<br />click below thumbnails to get the raw photos`);
+
+                            // set the qrcode with session
+                            var qrcode = new QRCode($("#modal-qrcode .modal-dialog .modal-body").get(0))
+                            qrcode.clear();
+                            qrcode.makeCode(config.CLIENT_DOMAIN_URL_QRCODE + '/result?s=' + session);
+
+                            // set photos list
+                            d.data.forEach(obj => {
+                                $img = $('<img />', {
+                                    'src': config.CLIENT_DOMAIN_URL +
+                                        `/thumbnail/${obj.event}/${obj.id}.jpg`,
+                                    'style': 'display:none',
+                                    'title': `${obj.event}-(${obj.score})`,
+                                    'alt': `${obj.event}-(${obj.id})`
+                                }).on('load', function () {
+                                    $(this).fadeIn(1000);
+                                }).on('click', function () {
+                                    $raw = $("#modal-photo").modal("show").find(
+                                        ".modal-dialog img").hide();
+                                    $raw.prev('p').text('loading ...');
+                                    $raw.prop('src', config.CLIENT_DOMAIN_URL +
+                                            `/thumbnail/${obj.event}/${obj.id}_resize.jpg`
+                                        )
+                                        .prop('alt',
+                                            `Similarity: ${obj.score.toFixed(2)}`)
+                                        .prop('longdesc', config.CLIENT_DOMAIN_URL + obj
+                                            .image)
+                                        .on('click', function () {
+                                            $("#modal-photo").modal("hide");
+                                        });
+                                });
+                                $item = $('<div></div>', {
+                                    'class': 'col-lg-2 col-md-3 col-4'
+                                }).append($img)
+                                $("#photo-list").append($item);
+                            });
+                        } else {
+                            alert(d.message);
+                        }
+                    }
+                });
+            } else {
+                $("#photo-list").empty();
+            }
+        });
+    </script>
+</body>
+
+</html>

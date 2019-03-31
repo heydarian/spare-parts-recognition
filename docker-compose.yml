@@ -12,5 +12,8 @@ services:
       - ./server/sample:/code/sample
       - ./server/label:/code/label
       - ./server/config.py:/code/config.py
+      - ./client/package.json:/home/client/package.json #dev
+      - ./client/pages:/home/client/pages # dev
+      - ./client/dist:/home/client/dist #dev
+      - ./client/index.js:/home/client/index.js #dev
     command: sh start.sh
-    # command: sh -c "npm start && python /code/main.py > /code/log/tornado.log"
