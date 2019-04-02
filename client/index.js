@@ -13,7 +13,7 @@ const credentials = {
 
 // static files
 app.use('/', express.static('./pages'));
-app.use('/label', express.static('./pages/label.html'));
+app.use('/labels', express.static('./pages/labels.html'));
 
 app.use('/favicon', express.static('./favicon.ico'));
 app.use('/dist', express.static('./dist'));

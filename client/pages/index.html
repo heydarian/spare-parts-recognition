@@ -5,130 +5,103 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Photo Finder for Events</title>
-    <link rel="shortcut icon" href="/favicon" /> 
-    <!-- Theme style -->
-    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
-    <!-- Google Font: Source Sans Pro -->
-    <link rel="stylesheet" href="/node_modules/source-sans-pro/source-sans-pro.css">
-
-    <link rel="stylesheet" href="/dist/css/main.css">
+    <title>Spare Parts Recognition</title>
+    <link rel="shortcut icon" href="/favicon" />
+    <!-- twitter-bootstrap -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- font-awesome-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- admin-lte -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.10/css/AdminLTE.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.10/css/skins/_all-skins.min.css">
 </head>
 
-<body>
+<body class="skin-blue hold-transition sidebar-mini sidebar-collapse">
     <div class="wrapper">
-        <div class="header clearfix">
-            <i class="logo-sap"></i>
-            <h1>PHOTO FINDER</h1>
-        </div>
+        <header id="header" class="main-header"></header>
+        <aside id="sidebar" class="main-sidebar sidebar-dark-primary elevation-4"></aside>
+
         <!-- Content Wrapper. Contains page content -->
-        <div class="container index-page">
-            <h2>
-                Scan your face &amp; find yourself
-                <p><span id="lbl-photo-count">?</span> photos in library</p>
-            </h2>
-            <div class="button-bar">
-                <button id="btn-enter" class="btn btn-primary">Buzz to get started</button>
-                <div class="form-check">
-                    <input id="cb-compliance" type="checkbox" class="form-check-input" checked />
-                    <label class="form-check-label" for="cb-compliance">I agree to share my data.</label>
+        <div class="content-wrapper">
+            <section class="content-header">
+                <h1>
+                    Home Page
+                    <small>Console of Spare Parts Recognition</small>
+                </h1>
+                <ol class="breadcrumb">
+                    <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                    <li class="active">Index</li>
+                </ol>
+            </section>
+            <!-- Main content -->
+            <section class="content">
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Horizontal Form</h3>
+                    </div>
+                    <!-- /.box-header -->
+                    <!-- form start -->
+                    <form class="form-horizontal">
+                        <div class="box-body">
+                            <div class="form-group">
+                                <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
+
+                                <div class="col-sm-10">
+                                    <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputPassword3" class="col-sm-2 control-label">Password</label>
+
+                                <div class="col-sm-10">
+                                    <input type="password" class="form-control" id="inputPassword3"
+                                        placeholder="Password">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-2 col-sm-10">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox"> Remember me
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.box-body -->
+                        <div class="box-footer">
+                            <button type="reset" class="btn btn-default pull-right">Cancel</button>
+                            <button type="submit" class="btn btn-info pull-right" style="margin-right: 5px">Recognize</button>
+                        </div>
+                        <!-- /.box-footer -->
+                    </form>
                 </div>
-            </div>
+            </section>
         </div>
-        <div id="carousel" class="carousel slide index-photo" data-ride="carousel">
-            <ol class="carousel-indicators">
-                <li data-target="#carousel" data-slide-to="0" class="active"></li>
-                <li data-target="#carousel" data-slide-to="1"></li>
-                <li data-target="#carousel" data-slide-to="2"></li>
-                <li data-target="#carousel" data-slide-to="3"></li>
-                <li data-target="#carousel" data-slide-to="4"></li>
-                <li data-target="#carousel" data-slide-to="5"></li>
-                <li data-target="#carousel" data-slide-to="6"></li>
-                <li data-target="#carousel" data-slide-to="7"></li>
-                <li data-target="#carousel" data-slide-to="8"></li>
-            </ol>
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <img class="d-block w-100" src="../dist/img/photo/02.jpg" alt="02">
-                </div>
-                <div class="carousel-item">
-                    <img class="d-block w-100" src="../dist/img/photo/03.jpg" alt="03">
-                </div>
-                <div class="carousel-item">
-                    <img class="d-block w-100" src="../dist/img/photo/04.jpg" alt="04">
-                </div>
-                <div class="carousel-item">
-                    <img class="d-block w-100" src="../dist/img/photo/05.jpg" alt="05">
-                </div>
-                <div class="carousel-item">
-                    <img class="d-block w-100" src="../dist/img/photo/06.jpg" alt="06">
-                </div>
-                <div class="carousel-item">
-                    <img class="d-block w-100" src="../dist/img/photo/07.jpg" alt="07">
-                </div>
-                <div class="carousel-item">
-                    <img class="d-block w-100" src="../dist/img/photo/08.jpg" alt="08">
-                </div>
-                <div class="carousel-item">
-                    <img class="d-block w-100" src="../dist/img/photo/09.jpg" alt="09">
-                </div>
-                <div class="carousel-item">
-                    <img class="d-block w-100" src="../dist/img/photo/10.jpg" alt="10">
-                </div>
-            </div>
-            <a class="carousel-control-prev" href="#carousel" role="button" data-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="sr-only">Previous</span>
-            </a>
-            <a class="carousel-control-next" href="#carousel" role="button" data-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="sr-only">Next</span>
-            </a>
-        </div>
+
+        <!-- Main Footer -->
+        <footer id="footer" class="main-footer"></footer>
     </div>
     <!-- ./wrapper -->
 
     <!-- REQUIRED SCRIPTS -->
     <!-- jQuery -->
-    <script src="/node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <!-- Bootstrap -->
-    <script src="/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-
-    <script src="/dist/js/main.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!-- Adminlte -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.10/js/adminlte.min.js"></script>
 
     <script type="text/javascript">
         $(function () {
-            if (!(!browser.versions.mobile && !browser.versions.ios && !browser.versions.android &&
-                    !browser.versions.iPhone && !browser.versions.iPad)) {
-                // mobile cilent
-                window.location.href = '/camera';
-            }
+            $("#header").load("./shared/header.html");
+            $("#footer").load("./shared/footer.html");
 
-            $(".carousel").carousel({
-                interval: 5000,
-                pause: "false"
+            $("#sidebar").load("./shared/sidebar.html", function () {
+                $(".sidebar li.home-page>a").addClass("active");
+                $(".sidebar li.domain-list").find("a").removeClass("active");
             });
 
-            $("button#btn-enter").on('click', function () {
-                window.location.href = '/camera';
-            });
-
-            $(document).on('keydown', function (e) {
-                if (e.which == 13) {
-                    //play_sound();
-                    $("button#btn-enter").click();
-                }
-            });
-
-            $.getJSON(config.API_SERVER_PATH + '/info/' + config.EVENT_NAME, function (d, status) {
-                if (status === "success" && d != null) {
-                    if (d.state === "success") {
-                        $("#lbl-photo-count").text(d.data);
-                    } else {
-                        alert(d.message);
-                    }
-                }
-            });
         });
     </script>
 </body>

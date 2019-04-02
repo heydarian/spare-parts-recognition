@@ -17,7 +17,7 @@ RUN npm install
 
 # python server
 WORKDIR /home/server
-RUN mkdir log && mkdir sample && mkdir label
+RUN mkdir logs && mkdir sample && mkdir label
 COPY ./server/cert/ /home/server/cert/
 COPY ./server/label/ /home/server/label/
 COPY ./server/*.py /home/server/

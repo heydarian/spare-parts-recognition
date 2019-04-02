@@ -13,12 +13,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Cyrano Chen",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
-    "bootstrap": "^4.3.1",
-    "express": "^4.16.4",
-    "jquery": "^3.3.1",
-    "popper.js": "^1.14.7",
-    "source-sans-pro": "^2.45.0"
+    "express": "^4.16.4"
   }
 }
