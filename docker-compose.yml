@@ -14,6 +14,7 @@ services:
       - ./server/sample:/home/server/sample
       - ./server/label:/home/server/label
       - ./server/config.py:/home/server/config.py
+      - ./server/:/home/server # dev
       - ./client/package.json:/home/client/package.json #dev
       - ./client/pages:/home/client/pages # dev
       - ./client/dist:/home/client/dist #dev

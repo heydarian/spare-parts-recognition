@@ -12,8 +12,9 @@ RUN pip install -r /home/server/requirements.txt
 # nodejs client
 WORKDIR /home/client
 RUN apk add --update nodejs
-COPY ./client /home/client/
+COPY ./client/package.json /home/client
 RUN npm install
+COPY ./client /home/client/
 
 # python server
 WORKDIR /home/server

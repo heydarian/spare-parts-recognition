@@ -23,7 +23,7 @@ define("ssl_port", default=8443, help="Spare Parts recognition Server Hub", type
 class MainHandler(tornado.web.RequestHandler):
     def set_default_headers(self):
         self.set_header('Access-Control-Allow-Origin', '*')
-        self.set_header('Access-Control-Allow-Methods', 'POST')
+        self.set_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
         self.set_header('Access-Control-Allow-Headers', '*')
         self.set_header('Cache-Control', 'no-cache')
 
@@ -33,7 +33,7 @@ class MainHandler(tornado.web.RequestHandler):
             self.write(json.dumps({"state": "error", "message": "invalid post data"}))
             return
 
-        input_data = json.loads(content)
+        input_data = json_decode(content)
         print('input:', input_data['filename'])
 
         img = base64.b64decode(input_data['image']
@@ -72,6 +72,11 @@ class MainHandler(tornado.web.RequestHandler):
 
     def data_received(self, chunk):
         pass
+
+    def options(self):
+        # no body
+        self.set_status(204)
+        self.finish()
 
 
 if __name__ == "__main__":
