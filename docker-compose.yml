@@ -6,9 +6,9 @@ services:
     image: cyranochen/spare-parts-recognition:latest
     ports:
       - "8005:8000"
-      - "9005:8443"
+      - "9005:9000"
       - "8085:8080"
-      - "9085:8090"
+      - "9085:9080"
     volumes:
       - ./server/logs:/home/server/logs
       - ./server/sample:/home/server/sample
@@ -16,7 +16,9 @@ services:
       - ./server/config.py:/home/server/config.py
       - ./server/:/home/server # dev
       - ./client/package.json:/home/client/package.json #dev
-      - ./client/pages:/home/client/pages # dev
+      - ./client/public:/home/client/public # dev
       - ./client/dist:/home/client/dist #dev
       - ./client/index.js:/home/client/index.js #dev
+      - ./client/app:/home/client/app #dev
+      - ./client/label:/home/client/label
     command: sh start.sh

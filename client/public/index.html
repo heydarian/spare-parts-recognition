@@ -111,10 +111,11 @@
     <!-- Adminlte -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.10/js/adminlte.min.js"></script>
 
-    <script src="../dist/js/main.js"></script>
+    <script src="./dist/js/main.js"></script>
 
     <script type="text/javascript">
         $(function () {
+            // load shared web parts
             $("#header").load("./shared/header.html");
             $("#footer").load("./shared/footer.html");
 
@@ -123,7 +124,17 @@
                 $(".sidebar li.labels-page").removeClass("active");
             });
 
-            $("#tb-image").on('change', (e) => {
+
+            var $tbImage = $("input#tb-image");
+            var $taImageBase64 = $("textarea#ta-image-base64");
+            var $btnRecognize = $("button#btn-recognize");
+            var $imgPreview = $("img#img-preview");
+            var $tbFilename = $("input#tb-filename");
+            var $btnReset = $("button#btn-reset");
+            var $pnlResult = $("div#pnl-result");
+            var $taRawResponse = $("textarea#ta-raw-response");
+
+            $tbImage.on('change', (e) => {
                 if (typeof window.FileReader !== 'function') {
                     alert("The file API isn't supported on this browser yet.");
                     return;
@@ -131,8 +142,8 @@
 
                 let file = e.target.files[0];
                 console.log(file);
-                $("#ta-image-base64").val('loading ...');
-                $("button#btn-recognize").hide();
+                $taImageBase64.val('loading ...');
+                $btnRecognize.hide();
 
                 let fr = new FileReader();
                 fr.onload = () => {
@@ -144,31 +155,32 @@
                         let ctx = canvas.getContext("2d");
                         ctx.drawImage(img, 0, 0);
 
-                        $("#ta-image-base64").val(canvas.toDataURL(file.type));
-                        $("button#btn-recognize").show();
+                        $taImageBase64.val(canvas.toDataURL(file.type));
+                        $btnRecognize.show();
                     };
 
                     img.src = fr.result;
-                    $("#img-preview").prop('src', img.src).css('max-width', '200px').css(
-                        'max-height', '168px');
+                    $imgPreview.prop('src', img.src).css('max-width', '200px').css('max-height',
+                        '168px');
 
-                    $("#tb-filename").val(file.name);
+                    $tbFilename.val(file.name);
                 };
                 fr.readAsDataURL(file);
             });
 
-            $("button#btn-reset").click(() => {
-                $("#img-preview").prop('src', '');
-                $("#pnl-result").hide().find("#ta-raw-response").val('');
-                $("button#btn-recognize").hide().prop('disabled', false);
+            $btnReset.click(() => {
+                $imgPreview.prop('src', '');
+                $pnlResult.hide();
+                $taRawResponse.val('');
+                $btnRecognize.hide().prop('disabled', false);
             });
 
-            $("button#btn-recognize").click(() => {
-                var filename = $("#tb-filename").val();
-                var imageBase64 = $("#ta-image-base64").val();
+            $btnRecognize.click(() => {
+                var filename = $tbFilename.val();
+                var imageBase64 = $taImageBase64.val();
 
                 if (filename != '' && imageBase64 != '') {
-                    $("button#btn-recognize").prop('disabled', true);
+                    $btnRecognize.prop('disabled', true);
                     const settings = {
                         "async": true,
                         "crossDomain": true,
@@ -185,16 +197,16 @@
                         })
                     };
 
-                    $.ajax(settings).done(function (response) {
-                        console.log(response);
-                        $("#ta-raw-response").val(response);
-                        if (response.state === 'success' && response.data.length > 0) {
-                            $.each(response.data, function (i, obj) {
-                                alert(i, obj);
+                    $.ajax(settings).done((resp) => {
+                        console.log(resp);
+                        $taRawResponse.val(resp);
+                        if (resp.state === 'success' && resp.data.length > 0) {
+                            $.each(resp.data, function (i, obj) {
+                                console.log(i, obj);
                             });
                         }
-                        $("#pnl-result").fadeIn(1000);
-                        $("button#btn-recognize").prop('disabled', false);
+                        $pnlResult.fadeIn(1000);
+                        $btnRecognize.prop('disabled', false);
                     }).fail(() => {
                         alert('server unavailable');
                     });

@@ -2,7 +2,7 @@ FROM publysher/alpine-numpy
 
 LABEL maintainer="Cyrano Chen <cyrano.chen@sap.com>"
 
-EXPOSE 8000 8443 8080 8090
+EXPOSE 8000 9000 8080 9080
 
 # environment
 WORKDIR /home/server
@@ -11,9 +11,8 @@ RUN pip install -r /home/server/requirements.txt
 
 # nodejs client
 WORKDIR /home/client
-RUN apk add --update nodejs
 COPY ./client/package.json /home/client
-RUN npm install
+RUN apk add --update nodejs && npm install
 COPY ./client /home/client/
 
 # python server

@@ -17,7 +17,7 @@ import utils
 from recognize import recognize_items, load_generate_items, export_results
 
 define("port", default=8000, help="Spare Parts recognition Server Hub", type=int)
-define("ssl_port", default=8443, help="Spare Parts recognition Server Hub", type=int)
+define("ssl_port", default=9000, help="Spare Parts recognition Server Hub", type=int)
 
 
 class MainHandler(tornado.web.RequestHandler):
