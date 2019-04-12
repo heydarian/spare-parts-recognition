@@ -26,6 +26,7 @@ class MainHandler(tornado.web.RequestHandler):
         self.set_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
         self.set_header('Access-Control-Allow-Headers', '*')
         self.set_header('Cache-Control', 'no-cache')
+        self.set_header('Content-Type', 'application/json')
 
     def post(self, *args, **kwargs):
         content = self.request.body
@@ -75,7 +76,7 @@ class MainHandler(tornado.web.RequestHandler):
 
     def options(self):
         # no body
-        self.set_status(204)
+        self.set_status(202)
         self.finish()
 
 
