@@ -1,24 +1,24 @@
 const req = require('request');
 const fs = require('fs');
 
+const config = require('./config');
+
 module.exports = {
     featureExtraction,
     similarityScoring
 };
 
-const LEONARDO_APIKEY = 'jGMB8R9KPK2MhNv7Tc9vTVGQ1mu7KLB0'
-const LEONARDO_IMAGEFEATUREEXTRACTION_APIURL = 'https://sandbox.api.sap.com/ml/imagefeatureextraction/feature-extraction'
-const LEONARDO_SIMILARITYSCORING_APIURL = 'https://sandbox.api.sap.com/ml/similarityscoring/similarity-scoring'
+const _configs = config.getConfigs();
 
 const headers = {
-    'APIKey': LEONARDO_APIKEY,
+    'APIKey': _configs.LEONARDO.APIKEY,
     'Accept': 'application/json'
     // 'content-type' : 'multipart/form-data'
-}
+};
 
 function featureExtraction(filename) {
     return new Promise((resolve, reject) => {
-        req.post(LEONARDO_IMAGEFEATUREEXTRACTION_APIURL, {
+        req.post(_configs.LEONARDO.IMAGEFEATUREEXTRACTION_APIURL, {
             formData: {
                 files: fs.createReadStream('./app/sample/' + filename)
             },
@@ -33,7 +33,7 @@ function featureExtraction(filename) {
 
 function similarityScoring(vectors, numSimilarVectors = 1) {
     return new Promise((resolve, reject) => {
-        req.post(LEONARDO_SIMILARITYSCORING_APIURL, {
+        req.post(_configs.LEONARDO.SIMILARITYSCORING_APIURL, {
             formData: {
                 texts: JSON.stringify(vectors),
                 options: JSON.stringify({ "numSimilarVectors": numSimilarVectors })

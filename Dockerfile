@@ -11,8 +11,9 @@ RUN pip install -r /home/server/requirements.txt
 
 # nodejs client
 WORKDIR /home/client
+RUN apk add --update nodejs
 COPY ./client/package.json /home/client
-RUN apk add --update nodejs && npm install
+RUN  npm install
 COPY ./client /home/client/
 
 # python server

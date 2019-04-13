@@ -5,9 +5,9 @@ const fs = require('fs');
 const http = require('http');
 const https = require('https');
 
+const config = require('./app/config');
 const label = require('./app/label');
 const recognize = require('./app/recognize');
-const utils = require('./app/utils');
 
 // ssl cert
 const credentials = {
@@ -15,8 +15,13 @@ const credentials = {
     cert: fs.readFileSync('./cert/client.crt', 'utf8')
 };
 
+// initial config && labels
+const _configs = config.getConfigs();
+const _labels = label.getLabels();
+console.log('Labels Loaded');
+
 const app = express();
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '20mb' }));
 
 // static files
 app.use('/', express.static('./public'));
@@ -26,13 +31,10 @@ app.use('/favicon', express.static('./favicon.ico'));
 // app.use('/node_modules', express.static('./node_modules'));
 
 // photo library file path
+app.use('/library', express.static('./app/label/pictures'))
 app.use('/spr_img', express.static('../server/label/b1_items'));
 
-// initial labels
-console.log('labels loaded');
-// console.log('labels loaded:\n', label.getLabels());
-
-app.post('/api/recognize',  async function (req, res, next) {
+app.post('/api/recognize', async function (req, res, next) {
     if (!req.body || !req.body.hasOwnProperty('filename') || !req.body.hasOwnProperty('image')) {
         res.sendStatus(400);
     }
@@ -47,38 +49,34 @@ app.post('/api/recognize',  async function (req, res, next) {
     fs.writeFileSync('./app/sample/' + filename, base64Data, 'base64', function (err) {
         next(err);
         res.sendStatus(415);
+        return;
     });
 
-    var results = await recognize.search(filename);
-    // filename = utils.remove_file_ext(input_data['filename'])
+    var result = await recognize.search(filename, _configs.GERENAL.THRESHOLD_NUM_SIMILAR);
+    console.log('similarity scoring:', result);
 
-    // results = recognize_items(input_data['filename'])
+    if (result && result.hasOwnProperty('predictions') && result.predictions.length > 0 &&
+        result.predictions[0].hasOwnProperty('id') && (result.predictions[0].id == filename) &&
+        result.predictions[0].hasOwnProperty('similarVectors') && result.predictions[0].similarVectors.length > 0) {
+        var condinates = [];
 
+        for (let item of result.predictions[0].similarVectors) {
+            if (item.score > _configs.GERENAL.THRESHOLD_SIMILAR) {
+                condinates.push(item);
+            }
+        }
 
-    // if len(results) > 0 and 'similarVectors' in results[0]:
-    //     ret_data = [r for r in results[0]['similarVectors'] if r['score'] >= config.THRESHOLD_SIMILAR]
-
-    //     ### hardcode required by Darius
-    //     if config.FLAG_HARDCODE:
-    //         fake_ret_data = []
-    //         for r in ret_data:
-    //             if r['id'].upper() == 'CW0001':
-    //                 fake_ret_data.append({'id': 'CW0001', 'score': random.uniform(0.92, 0.98)})
-    //             else:
-    //                 fake_ret_data.append(r)
-    //         ret_data = fake_ret_data
-    //     ###
-
-    //     ret_data.sort(key=lambda x: x['score'], reverse=True)
-    //     resp = json.dumps({"state": "success", "filename": filename, "data": export_results(ret_data)})
-
-    // TODO
-    if (true) {
-        res.send({ "state": "success", "filename": filename, "data": results });
-    } else {
-        // next('error');
-        res.sendStatus(204);
+        if (condinates.length > 0) {
+            res.send({ "state": "success", "filename": filename, "data": recognize.export(condinates) });
+            console.log(condinates);
+            console.log('-'.repeat(100));
+            return;
+        }
     }
+
+    res.send({ "state": "success", "filename": filename, "data": [] });
+    console.log('no condinates');
+    console.log('-'.repeat(100));
 });
 
 

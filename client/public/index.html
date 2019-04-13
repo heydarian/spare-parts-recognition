@@ -44,17 +44,16 @@
                     <form class="form-horizontal">
                         <div class="box-body">
                             <div class="form-group">
+                                <label for="tb-image" class="col-sm-3 control-label">image</label>
+                                <div class="col-sm-9">
+                                    <input type="file" class="form-control" id="tb-image" placeholder="file uploader">
+                                </div>
+                            </div>
+                            <div class="form-group">
                                 <label for="tb-filename" class="col-sm-3 control-label">file name</label>
 
                                 <div class="col-sm-9">
                                     <input type="text" class="form-control" id="tb-filename" placeholder="file name">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="tb-image" class="col-sm-3 control-label">image</label>
-
-                                <div class="col-sm-9">
-                                    <input type="file" class="form-control" id="tb-image" placeholder="Password">
                                 </div>
                             </div>
                             <div class="form-group">
@@ -90,6 +89,8 @@
                                         <textarea id="ta-raw-response" class="form-control" rows="5"></textarea>
                                     </div>
                                 </div>
+                                <div id="pnl-preview" class="form-group">
+                                </div>
                             </div>
                             <!-- /.box-body -->
                         </form>
@@ -124,7 +125,6 @@
                 $(".sidebar li.labels-page").removeClass("active");
             });
 
-
             var $tbImage = $("input#tb-image");
             var $taImageBase64 = $("textarea#ta-image-base64");
             var $btnRecognize = $("button#btn-recognize");
@@ -133,6 +133,7 @@
             var $btnReset = $("button#btn-reset");
             var $pnlResult = $("div#pnl-result");
             var $taRawResponse = $("textarea#ta-raw-response");
+            var $pnlPreview = $("div#pnl-preview");
 
             $tbImage.on('change', (e) => {
                 if (typeof window.FileReader !== 'function') {
@@ -184,7 +185,7 @@
                     const settings = {
                         "async": true,
                         "crossDomain": true,
-                        "url": config.API_SERVER_PATH + "/recognize",
+                        "url": getServerAddress() + "/recognize",
                         "method": "POST",
                         "headers": {
                             "Content-Type": "application/json",
@@ -197,18 +198,33 @@
                         })
                     };
 
-                    $.ajax(settings).done((resp) => {
-                        console.log(resp);
-                        $taRawResponse.val(resp);
-                        if (resp.state === 'success' && resp.data.length > 0) {
-                            $.each(resp.data, function (i, obj) {
-                                console.log(i, obj);
+                    $.ajax(settings).done((res) => {
+                        console.log(res);
+                        $taRawResponse.val(JSON.stringify(res));
+                        $pnlPreview.empty().hide();
+
+                        if (res && res.state === 'success' && res.data.length > 0) {
+                            $pnlPreview.append(
+                                    `<label class="col-sm-3 control-label">preview</label>`)
+                                .show();
+                            $.each(res.data, function (i, obj) {
+                                let item = $("<div />", {
+                                        class: "col-sm-3"
+                                    })
+                                    .append($(`<h4>${obj.name} (${obj.score.toFixed(2)})</h4>`))
+                                    .append($("<img />", {
+                                        src: obj.image,
+                                        style: 'width:100%;max-width:200px'
+                                    }))
+                                    .append($(`<p>code: ${obj.code} | quantity: ${obj.quantity} | price: ${obj.price.toFixed(2)}</p>`));
+                                $pnlPreview.append(item);
                             });
                         }
+
                         $pnlResult.fadeIn(1000);
                         $btnRecognize.prop('disabled', false);
-                    }).fail(() => {
-                        alert('server unavailable');
+                    }).fail((res) => {
+                        alert(`${res.status} (${res.statusText})`);
                     });
                 } else {
                     alert('please upload the input image');

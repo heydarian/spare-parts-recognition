@@ -15,10 +15,13 @@ services:
       - ./server/label:/home/server/label
       - ./server/config.py:/home/server/config.py
       - ./server/:/home/server # dev
-      - ./client/package.json:/home/client/package.json #dev
-      - ./client/public:/home/client/public # dev
-      - ./client/dist:/home/client/dist #dev
-      - ./client/index.js:/home/client/index.js #dev
       - ./client/app:/home/client/app #dev
-      - ./client/label:/home/client/label
+      - ./client/public:/home/client/public # dev
+      - ./client/index.js:/home/client/index.js #dev
+      - ./client/package.json:/home/client/package.json #dev
+      - ./client/logs:/home/client/logs
+      - ./client/config.json:/home/client/config.json
+      - ./client/app/label:/home/client/app/label
+      - ./client/app/sample:/home/client/app/sample
+
     command: sh start.sh
