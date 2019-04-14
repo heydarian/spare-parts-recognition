@@ -11,7 +11,7 @@
     "start": "nohup node index.js spare-part-recognition > ./logs/client.log &",
     "stop": "pkill node index.js spare-part-recognition",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "restart": "npm run stop && npm run start"
+    "restart": "pkill node && npm run start"
   },
   "author": "Cyrano Chen",
   "license": "MIT",

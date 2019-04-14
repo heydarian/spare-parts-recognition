@@ -8,5 +8,11 @@
         "APIKEY": "jGMB8R9KPK2MhNv7Tc9vTVGQ1mu7KLB0",
         "IMAGEFEATUREEXTRACTION_APIURL": "https://sandbox.api.sap.com/ml/imagefeatureextraction/feature-extraction",
         "SIMILARITYSCORING_APIURL": "https://sandbox.api.sap.com/ml/similarityscoring/similarity-scoring"
+    },
+    "BUSINESSONE": {
+        "SERVICELAYER_APIURL": "https://52.59.87.94:50000/b1s/v1",
+        "USERNAME": "manager",
+        "PASSWORD": "manager",
+        "COMPANYDB": "SBODEMOGB"
     }
 }

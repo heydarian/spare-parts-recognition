@@ -16,11 +16,11 @@ const headers = {
     // 'content-type' : 'multipart/form-data'
 };
 
-function featureExtraction(filename) {
+function featureExtraction(filename, filepath = './app/sample/') {
     return new Promise((resolve, reject) => {
         req.post(_configs.LEONARDO.IMAGEFEATUREEXTRACTION_APIURL, {
             formData: {
-                files: fs.createReadStream('./app/sample/' + filename)
+                files: fs.createReadStream(filepath + filename)
             },
             json: true,
             headers: headers

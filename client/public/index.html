@@ -69,6 +69,9 @@
                         </div>
                         <!-- /.box-body -->
                         <div class="box-footer">
+                            <button type="button" id="btn-sync" class="btn btn-primary pull-left"
+                                style="margin-right: 5px">Sync</button>
+                            <button type="button" id="btn-train" class="btn btn-primary pull-left">Train</button>
                             <button type="reset" id="btn-reset" class="btn btn-default pull-right">Cancel</button>
                             <button type="button" id="btn-recognize" class="btn btn-info pull-right"
                                 style="margin-right: 5px; display: none">Recognize</button>
@@ -130,6 +133,8 @@
             var $btnRecognize = $("button#btn-recognize");
             var $imgPreview = $("img#img-preview");
             var $tbFilename = $("input#tb-filename");
+            var $btnSync = $("button#btn-sync");
+            var $btnTrain = $("button#btn-train");
             var $btnReset = $("button#btn-reset");
             var $pnlResult = $("div#pnl-result");
             var $taRawResponse = $("textarea#ta-raw-response");
@@ -169,6 +174,30 @@
                 fr.readAsDataURL(file);
             });
 
+            $btnSync.click(() => {
+                $btnSync.text('Syncing').prop('disable', false);
+                $.post(getServerAddress() + "/sync", function (d, status) {
+                    if (status === 'success' && d) {
+                        console.log(d);
+                        $btnSync.text(`Synced (${d.length})`).prop('disable', true);
+                    } else {
+                        alert(status);
+                    }
+                });
+            });
+
+            $btnTrain.click(() => {
+                $btnTrain.text('Training').prop('disable', false);
+                $.post(getServerAddress() + "/train", function (d, status) {
+                    if (status === 'success' && d) {
+                        console.log(d);
+                        $btnTrain.text(`Trained (${Object.keys(d).length})`).prop('disable', true);
+                    } else {
+                        alert(status);
+                    }
+                });
+            });
+
             $btnReset.click(() => {
                 $imgPreview.prop('src', '');
                 $pnlResult.hide();
@@ -181,7 +210,7 @@
                 var imageBase64 = $taImageBase64.val();
 
                 if (filename != '' && imageBase64 != '') {
-                    $btnRecognize.prop('disabled', true);
+                    $btnRecognize.text('Recognizing').prop('disabled', true);
                     const settings = {
                         "async": true,
                         "crossDomain": true,
@@ -211,18 +240,22 @@
                                 let item = $("<div />", {
                                         class: "col-sm-3"
                                     })
-                                    .append($(`<h4>${obj.name} (${obj.score.toFixed(2)})</h4>`))
+                                    .append($(
+                                        `<h4>${obj.name} (${obj.score.toFixed(2)})</h4>`
+                                    ))
                                     .append($("<img />", {
                                         src: obj.image,
                                         style: 'width:100%;max-width:200px'
                                     }))
-                                    .append($(`<p>code: ${obj.code} | quantity: ${obj.quantity} | price: ${obj.price.toFixed(2)}</p>`));
+                                    .append($(
+                                        `<p>code: ${obj.code} | quantity: ${obj.quantity} | price: ${obj.price.toFixed(2)}</p>`
+                                    ));
                                 $pnlPreview.append(item);
                             });
                         }
 
                         $pnlResult.fadeIn(1000);
-                        $btnRecognize.prop('disabled', false);
+                        $btnRecognize.text('Recognize').prop('disabled', false);
                     }).fail((res) => {
                         alert(`${res.status} (${res.statusText})`);
                     });

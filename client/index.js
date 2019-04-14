@@ -8,6 +8,7 @@ const https = require('https');
 const config = require('./app/config');
 const label = require('./app/label');
 const recognize = require('./app/recognize');
+const b1service = require('./app/b1-sl');
 
 // ssl cert
 const credentials = {
@@ -35,6 +36,7 @@ app.use('/library', express.static('./app/label/pictures'))
 app.use('/spr_img', express.static('../server/label/b1_items'));
 
 app.post('/api/recognize', async function (req, res, next) {
+    console.log('[recognize]', new Date().toISOString());
     if (!req.body || !req.body.hasOwnProperty('filename') || !req.body.hasOwnProperty('image')) {
         res.sendStatus(400);
     }
@@ -47,9 +49,11 @@ app.post('/api/recognize', async function (req, res, next) {
     // let blob = utils.b64toBlob(base64Data, contentType);
 
     fs.writeFileSync('./app/sample/' + filename, base64Data, 'base64', function (err) {
-        next(err);
-        res.sendStatus(415);
-        return;
+        if (err) {
+            next(err);
+            res.sendStatus(415);
+            return;
+        }
     });
 
     var result = await recognize.search(filename, _configs.GERENAL.THRESHOLD_NUM_SIMILAR);
@@ -79,6 +83,19 @@ app.post('/api/recognize', async function (req, res, next) {
     console.log('-'.repeat(100));
 });
 
+app.post('/api/sync', async function (req, res, next) {
+    console.log('[syncDatasets]', new Date().toISOString());
+    var result = await label.syncDatasets();
+    res.send(result);
+    console.log('-'.repeat(100));
+});
+
+app.post('/api/train', async function (req, res, next) {
+    console.log('[initialLabels]', new Date().toISOString());
+    var result = await label.initialLabels();
+    res.send(result);
+    console.log('-'.repeat(100));
+});
 
 // http / https server
 var httpServer = http.createServer(app);

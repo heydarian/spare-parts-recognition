@@ -62,5 +62,7 @@ function exportResult(raw) {
             });
         }
     }
+
+    results.sort((a, b) => { a.score > b.score });
     return results;
 }
