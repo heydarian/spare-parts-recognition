@@ -243,13 +243,13 @@
                                     .append($(
                                         `<h4>${obj.name} (${obj.score.toFixed(2)})</h4>`
                                     ))
+                                    .append($(
+                                        `<p>code: ${obj.code} | quantity: ${obj.quantity} | price: ${obj.price}</p>`
+                                    ))
                                     .append($("<img />", {
                                         src: obj.image,
                                         style: 'width:100%;max-width:200px'
-                                    }))
-                                    .append($(
-                                        `<p>code: ${obj.code} | quantity: ${obj.quantity} | price: ${obj.price}</p>`
-                                    ));
+                                    }));
                                 $pnlPreview.append(item);
                             });
                         }

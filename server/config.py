@@ -3,7 +3,7 @@ DICT_LABEL = dict()
 LABEL_B1_FILEPATH = './label/b1_items/'
 LABEL_OTHER_FILEPATH = './label/other_items/'
 LABEL_JSON_FILEPATH = './label/labels.json'
-LABEL_IMG_URL = 'http://10.58.78.253:8085/spr_img/'
+LABEL_IMG_URL = 'http://127.0.0.1:8085/spr_img/'
 
 SAMPLE_FILEPATH = './sample'
 
