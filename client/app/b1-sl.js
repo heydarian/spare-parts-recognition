@@ -30,7 +30,6 @@ function getCookies() {
                 _cookieString = `B1SESSION=${body.SessionId};HttpOnly;`;
                 _cookieStringTimeout = Date.now();
                 console.log(_cookieString, _cookieStringTimeout);
-
                 resolve(_cookieString);
             } else {
                 resolve(null);
@@ -63,31 +62,16 @@ async function itemImage(itemId) {
         if (!cookie) { return null; }
     }
 
-    return await new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         const j = req.jar();
         const cookie = req.cookie(_cookieString);
         const url = _configs.BUSINESSONE.SERVICELAYER_APIURL + `/ItemImages('${itemId}')/$value`;
         j.setCookie(cookie, url);
         req.get(url, {
-            json: true,
             jar: j,
             rejectUnauthorized: false,
-            headers: {
-                'Accept': 'image/jpeg',
-                'Accept-Encoding': 'gzip, deflate'
-            }
-        }).pipe(fs.createWriteStream(`./app/label/pictures/${itemId}.jpg`)).on('close', resolve);
-        // (err, res, body) => {
-        //     if (err) { reject(err); }
-        //     console.log('image:', itemId);
-        //     if (body && !body.hasOwnProperty('error')) {
-        //         fs.writeFile(`./app/label/pictures/${itemId}.jpg`, body, 'binary', function (err) {
-        //             if (err) { next(err); }
-        //         });
-        //     }
-        //     // save the image as file
-        //     resolve(body);
-        // });
+            gzip: true
+        }).pipe(fs.createWriteStream(`./app/label/pictures/${itemId}.jpg`)).on('close', resolve).on('error', reject);
     });
 }
 

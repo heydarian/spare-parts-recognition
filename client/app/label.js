@@ -45,12 +45,17 @@ async function initialLabels() {
         _itemLabels = {};
         for (let item of ds) {
             if (item.Picture && item.Picture != '') {
-                _itemLabels[item.ItemCode] = {
-                    "name": item.ItemName,
-                    "price": `${item.ItemPrices[0].Currency} ${item.ItemPrices[0].Price}`,
-                    "quantity": item.QuantityOnStock,
-                    //"featureVectors": await leon.featureExtraction(item.Picture, filepath='./app/label/pictures/')
-                };
+                let result = await leon.featureExtraction(item.ItemCode + '.jpg', filepath = './app/label/pictures/');
+                if (result && result.hasOwnProperty('predictions') && result.predictions[0].hasOwnProperty('featureVectors')){
+                    _itemLabels[item.ItemCode] = {
+                        "name": item.ItemName,
+                        "price": `${item.ItemPrices[0].Currency} ${item.ItemPrices[0].Price}`,
+                        "quantity": item.QuantityOnStock,
+                        "featureVectors": result.predictions[0].featureVectors
+                    };
+                } else {
+                    console.log('err on feature extraction', item.ItemCode)
+                }
             }
         }
 

@@ -17,6 +17,7 @@ const headers = {
 };
 
 function featureExtraction(filename, filepath = './app/sample/') {
+    console.log(filepath + filename);
     return new Promise((resolve, reject) => {
         req.post(_configs.LEONARDO.IMAGEFEATUREEXTRACTION_APIURL, {
             formData: {
