@@ -88,5 +88,35 @@
     "name": "ELKA cogwheel Module 6",
     "price": 5.95,
     "quantity": 55
+  },
+  "CZ0001": {
+    "name": "Hexagon 15mm Nut",
+    "price": 0.39,
+    "quantity": 551
+  },
+  "CY0001": {
+    "name": "Medium 9mm Screw",
+    "price": 0.33,
+    "quantity": 234
+  },
+  "CZ0002": {
+    "name": "Circle 7mm Nut",
+    "price": 0.35,
+    "quantity": 628
+  },
+  "CY0002":{
+    "name": "Long Black Screw",
+    "price": 0.45,
+    "quantity": 462
+  },
+  "CZ0003": {
+    "name": "Hexagon 20mm Nut",
+    "price": 0.42,
+    "quantity": 128
+  },
+  "CY0003": {
+    "name": "Long Sliver Nut",
+    "price": 0.45,
+    "quantity": 328
   }
 }
