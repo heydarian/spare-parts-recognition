@@ -7,7 +7,7 @@ EXPOSE 8000 9000 8080 9080
 # environment
 WORKDIR /home/server
 COPY ./server/requirements.txt /home/server
-RUN pip install -r /home/server/requirements.txt
+RUN pip install -r /home/server/requirements_docker.txt
 
 # nodejs client
 WORKDIR /home/client
