@@ -6,3 +6,5 @@ applications:
     buildpacks:
       - https://github.com/cloudfoundry/python-buildpack.git
     command: python main.py
+    env:
+        LABEL_IMG_URL: https://spare-parts-recognition.cfapps.eu10.hana.ondemand.com/labels/

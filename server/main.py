@@ -85,7 +85,9 @@ if __name__ == "__main__":
     print('server started')
 
     tornado.options.parse_command_line()
-    app = tornado.web.Application(handlers=[('/api/recognize', MainHandler)])
+    app = tornado.web.Application(handlers=[('/api/recognize', MainHandler),
+                                            (r"/labels/(.*)", tornado.web.StaticFileHandler,
+                                             {"path": r"./label/b1_items/"})])
 
     https_server = tornado.httpserver.HTTPServer(app, ssl_options={
         "certfile": "./cert/server.crt",

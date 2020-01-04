@@ -88,7 +88,7 @@ def export_results(raw):
         for r in raw:
             item = config.DICT_LABEL[r['id']]
             results.append({'code': r['id'], 'name': item['name'], 'price': item['price'], 'quantity': item['quantity'],
-                            'score': r['score'], 'image': config.LABEL_IMG_URL + r['id'] + '.jpg'})
+                            'score': r['score'], 'image': os.environ.get('LABEL_IMG_URL', config.LABEL_IMG_URL) + r['id'] + '.jpg'})
         return results
     else:
         return []
