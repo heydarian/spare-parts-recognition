@@ -2,17 +2,17 @@
 import requests
 import json
 
-import config
+import settings
 
 headers = {
-    'APIKey': config.LEONARDO_APIKEY,
+    'APIKey': settings.LEONARDO_APIKEY,
     'Accept': 'application/json',
     # 'content-type' : 'multipart/form-data'
 }
 
 
 def feature_extraction(files):
-    resp = requests.post(config.LEONARDO_IMAGEFEATUREEXTRACTION_APIURL, files=files, headers=headers)
+    resp = requests.post(settings.LEONARDO_IMAGEFEATUREEXTRACTION_APIURL, files=files, headers=headers)
     if resp.status_code == 200:
         return json.loads(resp.text)['predictions']
     else:
@@ -23,7 +23,7 @@ def feature_extraction(files):
 def similarity_scoring(vectors, num_similar_vectors=1):
     data = {"texts": json.dumps(vectors),
             "options": json.dumps({"numSimilarVectors": num_similar_vectors})}
-    resp = requests.post(config.LEONARDO_SIMILARITYSCORING_APIURL, data=data, headers=headers)
+    resp = requests.post(settings.LEONARDO_SIMILARITYSCORING_APIURL, data=data, headers=headers)
     if resp.status_code == 200:
         return json.loads(resp.text)['predictions']
     else:

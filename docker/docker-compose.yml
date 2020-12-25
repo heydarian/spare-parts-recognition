@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  spare-parts-recognition-server:
+    container_name: spare-parts-recognition-server
+    image: cyranochen/spare-parts-recognition-server:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../server:/app
+      # - ~/.keras:/root/.keras
+    # entrypoint: tail -F anything

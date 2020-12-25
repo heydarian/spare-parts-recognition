@@ -1,100 +1,80 @@
 # -*- coding: utf-8 -*-
-import os
 import json
+import os
 
-from time import time
+import numpy as np
 
-import config
+import settings
 import utils
+from service import get_image_tensor, extract_feature_vector
 
-from leonardo import feature_extraction, similarity_scoring
+_labels = utils.load_labels()
+print('labels loaded:', len(_labels))
 
 
-def generate_items(archive=True):
-    f_list = [f for f in os.listdir(config.LABEL_B1_FILEPATH) if os.path.splitext(f)[1] == '.jpg']
-    print(f_list)
+def generate_labels(archive=True):
+    file_list = [f for f in sorted(os.listdir(settings.LABEL_B1_FILEPATH)) if
+                 os.path.splitext(f)[-1] in ['.jpg', '.jpeg', '.png', '.bmp', '.gif']]
+    # print(file_list)
 
-    if len(f_list) == 0:
+    if len(file_list) == 0:
         return
 
-    for f in f_list:
-        print('extracting:', f)
-        file = {'files': open(config.LABEL_B1_FILEPATH + f, 'rb')}
-        results = feature_extraction(file)
+    for fp in file_list:
+        name = utils.remove_file_ext(fp).upper()
+        print('extracting:', fp)
 
-        if len(results) > 0:
-            for r in results:
-                name = utils.remove_file_ext(f)
-                config.DICT_LABEL[name] = r['featureVectors']
+        fv = extract_feature_vector(get_image_tensor(settings.LABEL_B1_FILEPATH + fp))
+        print('feature vectors:', list(fv.astype(float)))
 
-    if len(config.DICT_LABEL) > 0:
-        with open(config.LABEL_B1_FILEPATH + 'label.json', encoding='utf-8') as json_file:
-            label = json.load(json_file)
+        if name in _labels:
+            _labels[name]['featureVectors'] = list(fv.astype(float))
+            print(name, 'extracted')
 
-        for k, v in config.DICT_LABEL.items():
-            print(k, v)
-            if k in label:
-                label[k]['featureVectors'] = v
+        print('-' * 20)
 
-        with open(config.LABEL_JSON_FILEPATH, 'w', encoding='utf-8') as json_file:
-            json.dump(label, json_file)
+    with open(settings.LABEL_JSON_FILEPATH, 'w', encoding='utf-8') as f:
+        json.dump(_labels, f)
+
+    return _labels
 
 
-def load_generate_items():
-    with open(config.LABEL_JSON_FILEPATH, 'r', encoding='utf-8') as json_file:
-        config.DICT_LABEL = json.load(json_file)
-
-
-def recognize_items(img_file_name, num_similar_vectors=config.THRESHOLD_NUM_SIMILAR):
-    files = {'files': open(config.SAMPLE_FILEPATH + '/' + img_file_name, 'rb')}
-    start = time()
-    results = feature_extraction(files)
-    print('Leonardo feature_extraction:', time() - start)
-
-    if len(results) > 0 and 'featureVectors' in results[0]:
-        fvs = results[0]['featureVectors']
-        vectors = {"0": [{"id": img_file_name, "vector": fvs}],
-                   "1": [{"id": k, "vector": v['featureVectors']} for k, v in config.DICT_LABEL.items()]}
-
-        # start = time()
-        # results = similarity_scoring(vectors, num_similar_vectors=num_similar_vectors)
-        # print('Leonardo similarity_scoring:', time() - start)
-
-        start = time()
-        results = similarity_scoring_self(vectors, num_similar_vectors=num_similar_vectors)
-        print('self-built similarity_scoring:', time() - start)
-        print('results:', results)
-        return results
-    else:
-        print('no feature vectors')
+def find_similar_items(fv, threshold_similar=0.6, num_similar_vectors=3):
+    if len(_labels) <= 0:
         return []
 
+    results = []
+    for k, v in _labels.items():
+        score = utils.cosine_similarity(fv, np.array(v['featureVectors'], dtype='float32'))
+        if score >= threshold_similar:
+            results.append((k, score))
 
-def similarity_scoring_self(v, num_similar_vectors=1):
-    if len(v['0']) > 0 and len(v['1']) > 0:
-        ret_values = []
-        for a in v['0']:
-            similar_vectors = [{'id': b['id'], 'score': utils.cosine_similarity(a['vector'], b['vector'])} for b in
-                               v['1']]
-            similar_vectors.sort(key=lambda x: x['score'], reverse=True)
-            ret_values.append({'id': a['id'], 'similarVectors': similar_vectors[:num_similar_vectors]})
-        return ret_values
-    return []
+    return sorted(results, key=lambda x: x[1], reverse=True)[:num_similar_vectors]
+
+
+def process(img_file_name):
+    fp = settings.SAMPLE_FILEPATH + img_file_name
+    fv = extract_feature_vector(get_image_tensor(fp))
+
+    return find_similar_items(fv, settings.THRESHOLD_SIMILAR, settings.THRESHOLD_NUM_SIMILAR)
 
 
 def export_results(raw):
+    results = []
     if len(raw) > 0:
-        results = []
         for r in raw:
-            item = config.DICT_LABEL[r['id']]
-            results.append({'code': r['id'], 'name': item['name'], 'price': item['price'], 'quantity': item['quantity'],
-                            'score': r['score'], 'image': os.environ.get('LABEL_IMG_URL', config.LABEL_IMG_URL) + r['id'] + '.jpg'})
-        return results
-    else:
-        return []
+            key, score = r
+            item = _labels[key]
+            results.append({'code': key, 'name': item['name'], 'price': item['price'], 'quantity': item['quantity'],
+                            'score': float(score),
+                            'image': os.environ.get('LABEL_IMG_URL', settings.LABEL_IMG_URL) + key + '.jpg'})
+    return results
 
 
 if __name__ == '__main__':
-    generate_items()
+    # generate_labels()
 
+    items = process('cog1_hq2.jpg')
+
+    print(export_results(items))
     print('All Done')

@@ -1,0 +1,12 @@
+FROM node:10-buster-slim
+
+LABEL maintainer="Cyrano Chen <cyrano.chen@sap.com>"
+
+EXPOSE 8080 8443
+
+WORKDIR /app
+COPY ./package.json /app
+RUN  npm install
+COPY ./ /app/
+
+ENTRYPOINT ["npm", "start"]

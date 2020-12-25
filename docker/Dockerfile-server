@@ -1,0 +1,16 @@
+FROM tensorflow/tensorflow:2.4.0
+
+LABEL maintainer="Cyrano Chen <cyrano.chen@sap.com>"
+
+EXPOSE 8080 8443
+
+WORKDIR /app
+COPY ./requirements.txt /app/
+RUN pip install -r requirements.txt
+RUN mkdir logs & mkdir samples
+
+COPY ./models /root/.keras/models
+COPY ./labels /app/labels
+COPY ./*.py /app/
+
+ENTRYPOINT ["python", "main.py"]

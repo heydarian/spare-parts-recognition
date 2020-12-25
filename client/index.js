@@ -102,7 +102,7 @@ var httpServer = http.createServer(app);
 var httpsServer = https.createServer(credentials, app);
 
 const PORT = 8080;
-const SSLPORT = 9080;
+const SSLPORT = 8443;
 
 httpServer.listen(PORT, () => {
     console.log('HTTP Server is running on port %s', PORT);
