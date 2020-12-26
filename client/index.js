@@ -8,19 +8,15 @@ const https = require('https');
 const config = require('./app/config');
 const label = require('./app/label');
 const recognize = require('./app/recognize');
-const b1service = require('./app/b1-sl');
 
 // ssl cert
-const credentials = {
-    key: fs.readFileSync('./cert/private.pem', 'utf8'),
-    cert: fs.readFileSync('./cert/client.crt', 'utf8')
-};
+// const credentials = {
+//     key: fs.readFileSync('./cert/private.pem', 'utf8'),
+//     cert: fs.readFileSync('./cert/client.crt', 'utf8')
+// };
 
-// initial config && labels
+// initial config
 const _configs = config.getConfigs();
-const _labels = label.getLabels();
-console.log('Labels Loaded');
-
 const app = express();
 app.use(bodyParser.json({ limit: '20mb' }));
 
@@ -33,7 +29,7 @@ app.use('/favicon', express.static('./favicon.ico'));
 
 // photo library file path
 app.use('/library', express.static('./app/label/pictures'))
-app.use('/spr_img', express.static('../server/label/b1_items'));
+//app.use('/spr_img', express.static('../server/label/b1_items'));
 
 app.post('/api/recognize', async function (req, res, next) {
     console.log('[recognize]', new Date().toISOString());
@@ -48,6 +44,10 @@ app.post('/api/recognize', async function (req, res, next) {
     // let contentType = req.body.image.substring(0, req.body.image.indexOf(';base64,'));
     // let blob = utils.b64toBlob(base64Data, contentType);
 
+    if (!fs.existsSync('./app/sample')) {
+        fs.mkdirSync('./app/sample');
+    }
+
     fs.writeFileSync('./app/sample/' + filename, base64Data, 'base64', function (err) {
         if (err) {
             next(err);
@@ -56,7 +56,7 @@ app.post('/api/recognize', async function (req, res, next) {
         }
     });
 
-    var result = await recognize.search(filename, _configs.GERENAL.THRESHOLD_NUM_SIMILAR);
+    var result = await recognize.search(filename);
     console.log('similarity scoring:', result);
 
     if (result && result.hasOwnProperty('predictions') && result.predictions.length > 0 &&
@@ -65,52 +65,64 @@ app.post('/api/recognize', async function (req, res, next) {
         var condinates = [];
 
         for (let item of result.predictions[0].similarVectors) {
-            if (item.score > _configs.GERENAL.THRESHOLD_SIMILAR) {
+            if (item.score > _configs.GENERAL.THRESHOLD_SIMILAR) {
                 condinates.push(item);
             }
         }
 
         if (condinates.length > 0) {
-            res.send({ "state": "success", "filename": filename, "data": recognize.export(condinates) });
+            res.send({ "state": "success", "filename": filename, "data": recognize.export(condinates), "raw": result.predictions[0].similarVectors });
             console.log(condinates);
+            console.log('-'.repeat(100));
+            return;
+        } else {
+            res.send({ "state": "success", "filename": filename, "data": [], "raw": result.predictions[0].similarVectors });
+            console.log('no condinates');
             console.log('-'.repeat(100));
             return;
         }
     }
 
     res.send({ "state": "success", "filename": filename, "data": [] });
-    console.log('no condinates');
+    console.log('exception on smilarity scoring');
     console.log('-'.repeat(100));
 });
 
-app.post('/api/sync', async function (req, res, next) {
-    console.log('[syncDatasets]', new Date().toISOString());
-    var result = await label.syncDatasets();
+app.post('/api/sync/b1', async function (req, res, next) {
+    console.log('[syncDatasets b1]', new Date().toISOString());
+    var result = await label.syncDatasetsB1();
+    res.send(result);
+    console.log('-'.repeat(100));
+});
+
+app.post('/api/sync/byd', async function (req, res, next) {
+    console.log('[syncDatasets byd]', new Date().toISOString());
+    var result = await label.syncDatasetsByd();
     res.send(result);
     console.log('-'.repeat(100));
 });
 
 app.post('/api/train', async function (req, res, next) {
     console.log('[initialLabels]', new Date().toISOString());
-    var result = await label.initialLabels();
+    var result = await label.initialLabels(dataset = _configs.GENERAL.DATASET);
     res.send(result);
     console.log('-'.repeat(100));
 });
 
 // http / https server
 var httpServer = http.createServer(app);
-var httpsServer = https.createServer(credentials, app);
+// var httpsServer = https.createServer(credentials, app);
 
 const PORT = 8080;
-const SSLPORT = 8443;
+// const SSLPORT = 9080;
 
 httpServer.listen(PORT, () => {
     console.log('HTTP Server is running on port %s', PORT);
     console.log('-'.repeat(100));
 });
 
-httpsServer.listen(SSLPORT, () => {
-    console.log('HTTPS Server is running on port %s', SSLPORT);
-    console.log('-'.repeat(100));
-});
+// httpsServer.listen(SSLPORT, () => {
+//     console.log('HTTPS Server is running on port %s', SSLPORT);
+//     console.log('-'.repeat(100));
+// });
 

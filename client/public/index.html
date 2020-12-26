@@ -69,8 +69,10 @@
                         </div>
                         <!-- /.box-body -->
                         <div class="box-footer">
-                            <button type="button" id="btn-sync" class="btn btn-primary pull-left"
-                                style="margin-right: 5px">Sync</button>
+                            <button type="button" id="btn-sync-b1" class="btn btn-primary pull-left"
+                                style="margin-right: 5px">Sync B1</button>
+                            <button type="button" id="btn-sync-byd" class="btn btn-primary pull-left"
+                                style="margin-right: 5px">Sync ByDesign</button>
                             <button type="button" id="btn-train" class="btn btn-primary pull-left">Train</button>
                             <button type="reset" id="btn-reset" class="btn btn-default pull-right">Cancel</button>
                             <button type="button" id="btn-recognize" class="btn btn-info pull-right"
@@ -115,7 +117,9 @@
     <!-- Adminlte -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.10/js/adminlte.min.js"></script>
 
-    <script src="./resource/js/main.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.3.0/exif.min.js"></script>
+
+    <!-- <script src="./resource/js/main.js"></script> -->
 
     <script type="text/javascript">
         $(function () {
@@ -133,7 +137,8 @@
             var $btnRecognize = $("button#btn-recognize");
             var $imgPreview = $("img#img-preview");
             var $tbFilename = $("input#tb-filename");
-            var $btnSync = $("button#btn-sync");
+            var $btnSyncB1 = $("button#btn-sync-b1");
+            var $btnSyncByd = $("button#btn-sync-byd");
             var $btnTrain = $("button#btn-train");
             var $btnReset = $("button#btn-reset");
             var $pnlResult = $("div#pnl-result");
@@ -155,11 +160,43 @@
                 fr.onload = () => {
                     let img = new Image();
                     img.onload = () => {
+                        // let canvas = document.getElementById("cvs-image");
+                        // canvas.width = img.width;
+                        // canvas.height = img.height;
+                        // let ctx = canvas.getContext("2d");
+                        // ctx.drawImage(img, 0, 0);
+
+                        // read file metadata
+                        var orient = getPhotoOrientation(img);
                         let canvas = document.getElementById("cvs-image");
+                        ctx = canvas.getContext('2d');
                         canvas.width = img.width;
                         canvas.height = img.height;
-                        let ctx = canvas.getContext("2d");
-                        ctx.drawImage(img, 0, 0);
+                        if (orient && orient != 1) {
+                            console.log('orient:', orient);
+                            switch (orient) {
+                                case 6: // 旋转90度
+                                    canvas.width = img.height;
+                                    canvas.height = img.width;
+                                    ctx.rotate(Math.PI / 2);
+                                    // (0,-imgHeight) 从旋转原理图那里获得的起始点
+                                    ctx.drawImage(img, 0, -(img.height), img.width, img.height);
+                                    break;
+                                case 3: // 旋转180度
+                                    ctx.rotate(Math.PI);
+                                    ctx.drawImage(img, -(img.width), -(img.height), img.width,
+                                        img.height);
+                                    break;
+                                case 8: // 旋转-90度
+                                    canvas.width = img.height;
+                                    canvas.height = img.width;
+                                    ctx.rotate(3 * Math.PI / 2);
+                                    ctx.drawImage(img, -(img.width), 0, img.width, img.height);
+                                    break;
+                            }
+                        } else {
+                            ctx.drawImage(img, 0, 0, img.width, img.height);
+                        }
 
                         $taImageBase64.val(canvas.toDataURL(file.type));
                         $btnRecognize.show();
@@ -174,12 +211,24 @@
                 fr.readAsDataURL(file);
             });
 
-            $btnSync.click(() => {
-                $btnSync.text('Syncing').prop('disable', false);
-                $.post(getServerAddress() + "/sync", function (d, status) {
+            $btnSyncB1.click(() => {
+                $btnSyncB1.text('Syncing').prop('disable', false);
+                $.post("/api/sync/b1", function (d, status) {
                     if (status === 'success' && d) {
                         console.log(d);
-                        $btnSync.text(`Synced (${d.length})`).prop('disable', true);
+                        $btnSyncB1.text(`Synced B1 (${d.length})`).prop('disable', true);
+                    } else {
+                        alert(status);
+                    }
+                });
+            });
+
+            $btnSyncByd.click(() => {
+                $btnSyncByd.text('Syncing').prop('disable', false);
+                $.post("/api/sync/byd", function (d, status) {
+                    if (status === 'success' && d) {
+                        console.log(d);
+                        $btnSyncByd.text(`Synced ByDesign (${d.length})`).prop('disable', true);
                     } else {
                         alert(status);
                     }
@@ -188,10 +237,11 @@
 
             $btnTrain.click(() => {
                 $btnTrain.text('Training').prop('disable', false);
-                $.post(getServerAddress() + "/train", function (d, status) {
+                $.post("/api/train", function (d, status) {
                     if (status === 'success' && d) {
                         console.log(d);
-                        $btnTrain.text(`Trained (${Object.keys(d).length})`).prop('disable', true);
+                        $btnTrain.text(`Trained (${Object.keys(d).length})`).prop('disable',
+                            true);
                     } else {
                         alert(status);
                     }
@@ -214,7 +264,7 @@
                     const settings = {
                         "async": true,
                         "crossDomain": true,
-                        "url": getServerAddress() + "/recognize",
+                        "url": "/api/recognize",
                         "method": "POST",
                         "headers": {
                             "Content-Type": "application/json",
@@ -252,6 +302,8 @@
                                     }));
                                 $pnlPreview.append(item);
                             });
+                        } else {
+                            alert('no smiliar item found')
                         }
 
                         $pnlResult.fadeIn(1000);
@@ -264,6 +316,15 @@
                 }
             });
         });
+
+        //获取照片的元信息（拍摄方向）
+        function getPhotoOrientation(img) {
+            var orient;
+            EXIF.getData(img, function () {
+                orient = EXIF.getTag(this, "Orientation");
+            });
+            return orient;
+        }
     </script>
 </body>
 

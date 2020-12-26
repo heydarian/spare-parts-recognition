@@ -1,9 +1,0 @@
-{
-   "error" : {
-      "code" : -2028,
-      "message" : {
-         "lang" : "en-us",
-         "value" : "ItemImages not found"
-      }
-   }
-}

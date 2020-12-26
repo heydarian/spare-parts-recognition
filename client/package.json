@@ -1,14 +1,14 @@
 {
   "name": "spare-part-recognition",
-  "version": "2.0.0",
+  "version": "2.2.0",
   "main": "index.js",
   "description": "the image handler of spare part recognition",
   "repository": {
     "type": "git",
-    "url": "https://github.wdf.sap.corp/I345795/SparePartsRecognition"
+    "url": "https://github.com/CyranoChen/spare-parts-recognition-scp"
   },
   "scripts": {
-    "start": "nohup node index.js spare-part-recognition > ./logs/client.log &",
+    "start": "node index.js spare-part-recognition",
     "stop": "pkill node index.js spare-part-recognition",
     "test": "echo \"Error: no test specified\" && exit 1",
     "restart": "pkill node && npm run start"
@@ -16,8 +16,12 @@
   "author": "Cyrano Chen",
   "license": "MIT",
   "dependencies": {
-    "body-parser": "^1.18.3",
-    "express": "^4.16.4",
-    "request": "^2.88.0"
+    "body-parser": "^1.19.0",
+    "dotenv": "^7.0.0",
+    "express": "^4.17.1",
+    "request": "^2.88.2"
+  },
+  "engines": {
+    "node": "^10.*"
   }
 }

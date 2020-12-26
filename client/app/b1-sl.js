@@ -49,7 +49,17 @@ async function itemList() {
         const cookie = req.cookie(_cookieString);
         const url = _configs.BUSINESSONE.SERVICELAYER_APIURL + '/Items';
         j.setCookie(cookie, url);
-        req.get(url, { json: true, jar: j, rejectUnauthorized: false }, (err, res, body) => {
+        req.get(url, {
+            qs: {
+                '$select': 'ItemCode,ItemName,QuantityOnStock,Picture,ItemPrices'
+            },
+            headers: {
+                'Prefer': 'odata.maxpagesize=0'
+            },
+            json: true,
+            jar: j,
+            rejectUnauthorized: false
+        }, (err, res, body) => {
             if (err) { reject(err); }
             resolve(body);
         });
@@ -77,6 +87,10 @@ async function itemImage(itemId) {
 
 function processDataset(raw) {
     if (raw && raw.hasOwnProperty('value') && raw.value.length > 0) {
+        if (!fs.existsSync('./app/label/pictures')) {
+            fs.mkdirSync('./app/label/pictures');
+        }
+
         for (let item of raw.value) {
             if (item.Picture && item.Picture != '') {
                 itemImage(item.ItemCode);

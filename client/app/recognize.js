@@ -1,57 +1,42 @@
 const fs = require('fs');
 
-const leon = require('./leonardo');
-const label = require('./label')
+const config = require('./config');
+const service = require('./service');
+const label = require('./label');
 
 module.exports = {
     search: searchImage,
-    score: similarityScoring,
     export: exportResult
 };
 
-const _labels = label.getLabels();
+const _configs = config.getConfigs();
 
-async function searchImage(filename, numSimilarVectors = 3) {
-    var result = await leon.featureExtraction(filename);
+async function searchImage(filename) {
+    var result = await service.featureExtraction(filename);
     console.log('feature extraction:', result);
 
-    if (result && result.hasOwnProperty('predictions') && result.predictions[0].hasOwnProperty('featureVectors')) {
+    if (result && result.hasOwnProperty('state') && result.state == 'success' && result.hasOwnProperty('data')) {
         var condinates = [];
-        for (let k in _labels) {
-            condinates.push({ "id": k, "vector": _labels[k].featureVectors });
+        const labels = label.getLabels();
+        for (let k in labels) {
+            score = service.similarityScoring(result.data, labels[k].featureVectors);
+            condinates.push({ "id": k, "score": score });
         }
 
-        const vectors = {
-            "0": [{ "id": filename, "vector": result.predictions[0].featureVectors }],
-            "1": condinates
-        };
-        // console.log(vectors);
+        condinates.sort((a, b) => { return a.score > b.score; });
 
-        return await leon.similarityScoring(vectors, numSimilarVectors);
+        return condinates.slice(0, _configs.GENERAL.THRESHOLD_NUM_SIMILAR);
     } else {
         return [];
     }
 }
 
-function similarityScoring(v, numSimilarVectors = 1) {
-    // if len(v['0']) > 0 and len(v['1']) > 0:
-    //     ret_values = []
-    //     for a in v['0']:
-    //         similar_vectors = [{'id': b['id'], 'score': utils.cosine_similarity(a['vector'], b['vector'])} for b in
-    //                            v['1']]
-    //         similar_vectors.sort(key=lambda x: x['score'], reverse=True)
-    //         ret_values.append({'id': a['id'], 'similarVectors': similar_vectors[:numSimilarVectors]})
-    //     return ret_values
-    // return []
-
-    return;
-}
 
 function exportResult(raw) {
     var results = [];
-    for (r of raw) {
-        if (_labels.hasOwnProperty(r.id)) {
-            let item = _labels[r.id];
+    for (let r of raw) {
+        let item = label.getLabels(r.id);
+        if (item) {
             results.push({
                 code: r.id,
                 name: item.name,
@@ -63,6 +48,6 @@ function exportResult(raw) {
         }
     }
 
-    results.sort((a, b) => { a.score > b.score });
+    results.sort((a, b) => { return a.score > b.score; });
     return results;
 }
