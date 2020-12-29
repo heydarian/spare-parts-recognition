@@ -7,7 +7,10 @@ services:
     ports:
       - "8000:8080"
     # volumes:
-    #   - ../client:/app
+    #   - ../client/app:/app/app
+    #   - ../client/.env:/app/.env
+    #   - ../client/index.js:/app/index.js
+    #   - ../client/test.js:/app/test.js
     depends_on:
       - server
     networks:

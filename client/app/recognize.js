@@ -13,19 +13,24 @@ const _configs = config.getConfigs();
 
 async function searchImage(filename) {
     var result = await service.featureExtraction(filename);
+    result = JSON.parse(result); // Convert to JSON
     console.log('feature extraction:', result);
 
     if (result && result.hasOwnProperty('state') && result.state == 'success' && result.hasOwnProperty('data')) {
-        var condinates = [];
+        var candidates = [];
         const labels = label.getLabels();
         for (let k in labels) {
             score = service.similarityScoring(result.data, labels[k].featureVectors);
-            condinates.push({ "id": k, "score": score });
+            console.log(k, score);
+            if (score >= _configs.GENERAL.THRESHOLD_SIMILAR) {
+                candidates.push({ "id": k, "score": score });
+            }
         }
 
-        condinates.sort((a, b) => { return a.score > b.score; });
+        candidates.sort((a, b) => { return b.score - a.score; });
+        // console.log('similarity scoring (TOP N):', candidates);
 
-        return condinates.slice(0, _configs.GENERAL.THRESHOLD_NUM_SIMILAR);
+        return candidates.slice(0, _configs.GENERAL.THRESHOLD_NUM_SIMILAR);
     } else {
         return [];
     }
@@ -48,6 +53,6 @@ function exportResult(raw) {
         }
     }
 
-    results.sort((a, b) => { return a.score > b.score; });
+    results.sort((a, b) => { return b.score - a.score; });
     return results;
 }

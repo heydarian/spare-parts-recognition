@@ -22,9 +22,9 @@ function featureExtraction(filename, filepath = './app/sample/') {
             // formData: {
             //     files: fs.createReadStream(filepath + filename)
             // },
-            // json: true,
+            // json: true, 
             headers: headers,
-            body: fs.createReadStream(filepath + filename)
+            body: fs.createReadStream(filepath + filename) // binary input payload
         }, (err, res, body) => {
             if (err) { reject(err); }
             resolve(body);

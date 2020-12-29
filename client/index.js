@@ -28,7 +28,7 @@ app.use('/favicon', express.static('./favicon.ico'));
 // app.use('/node_modules', express.static('./node_modules'));
 
 // photo library file path
-app.use('/library', express.static('./app/label/pictures'))
+app.use('/library', express.static('./app/label/pictures'));
 //app.use('/spr_img', express.static('../server/label/b1_items'));
 
 app.post('/api/recognize', async function (req, res, next) {
@@ -59,32 +59,7 @@ app.post('/api/recognize', async function (req, res, next) {
     var result = await recognize.search(filename);
     console.log('similarity scoring:', result);
 
-    if (result && result.hasOwnProperty('predictions') && result.predictions.length > 0 &&
-        result.predictions[0].hasOwnProperty('id') && (result.predictions[0].id == filename) &&
-        result.predictions[0].hasOwnProperty('similarVectors') && result.predictions[0].similarVectors.length > 0) {
-        var condinates = [];
-
-        for (let item of result.predictions[0].similarVectors) {
-            if (item.score > _configs.GENERAL.THRESHOLD_SIMILAR) {
-                condinates.push(item);
-            }
-        }
-
-        if (condinates.length > 0) {
-            res.send({ "state": "success", "filename": filename, "data": recognize.export(condinates), "raw": result.predictions[0].similarVectors });
-            console.log(condinates);
-            console.log('-'.repeat(100));
-            return;
-        } else {
-            res.send({ "state": "success", "filename": filename, "data": [], "raw": result.predictions[0].similarVectors });
-            console.log('no condinates');
-            console.log('-'.repeat(100));
-            return;
-        }
-    }
-
-    res.send({ "state": "success", "filename": filename, "data": [] });
-    console.log('exception on smilarity scoring');
+    res.send({ "state": "success", "filename": filename, "data": recognize.export(result), "raw": result});
     console.log('-'.repeat(100));
 });
 

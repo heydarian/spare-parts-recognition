@@ -74,6 +74,7 @@ async function initialLabels(dataset = 'all') {
             for (let item of ds) {
                 if (item.Picture && item.Picture != '') {
                     let result = await service.featureExtraction(item.ItemCode + '.jpg', filepath = './app/label/pictures/');
+                    result = JSON.parse(result); // Convert to JSON 
                     if (result && result.hasOwnProperty('state') && result.state == 'success' && result.hasOwnProperty('data')) {
                         _itemLabels[item.ItemCode] = {
                             "name": item.ItemName,
