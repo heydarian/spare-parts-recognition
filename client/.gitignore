@@ -60,5 +60,8 @@ typings/
 # next.js build output
 .next
 
-# my config
-app/label
+# local image
+env
+app/label/pictures/*
+app/sample/*
+yaml

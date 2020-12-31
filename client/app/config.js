@@ -9,11 +9,6 @@ module.exports = {
                 "DATASETS": "all".toLowerCase(),
                 "CNN_SERVER_ENDPOINT": process.env.CNN_SERVER_ENDPOINT,
             },
-            "LEONARDO": {
-                "APIKEY": process.env.LEON_APIKEY,
-                "IMAGEFEATUREEXTRACTION_APIURL": process.env.LEON_IMAGEFEATUREEXTRACTION_APIURL,
-                "SIMILARITYSCORING_APIURL": process.env.LEON_SIMILARITYSCORING_APIURL,
-            },
             "BUSINESSONE": {
                 "SERVICELAYER_APIURL": process.env.B1_SERVICELAYER_APIURL,
                 "USERNAME": process.env.B1_USERNAME,

@@ -1,47 +1,69 @@
-# Spare Part Recognition
+# Spare Part Recognition - A Simple Integration between SAP Business One / ByDesign and SAP Leonardo
 
 ![avatar](https://jam4.sapjam.com/profile/vQ2WGFrz1l1cmyPIZX6G8c/documents/exUx6J98mB0A3RqbVkE0W1/thumbnail?max_x=1200&max_y=1200)
 
-Identifying the key business drivers which have a major impact on the performance of a company is essential for the sustainability of a business. In many companies, performance is defined by agile and efficient master data management, where decreasing the amount of man-hour per lookup will lead into increasing the overall business revenue. The rise of disruptive and game-changing innovations lets the world spin faster for such companies and lets them get faster and better results.
+This is a sample integration of SAP Business One or SAP Business ByDesign with SAP Leonardo. It uses SAP Leonardo APIs to extract the features vectors of a given input product image and then find out the smiliar items.
 
-One of these lucky winners are service engineers, who never had an easier work life than today. The machines of their customers apply certain standards and have enriched documentations with long lists of predefined maintenance tasks and plans. Multiple customers are being visited from day to day, to let inspect and fix their machines as planned in their maintenance contracts.
+## Overview
 
-But what would life be without any challenges. Luckily, we still live in a time in which unprecedented and unexpected issues may appear at anytime, so one challenge still exists in finding the right spare parts in time, outside the regular maintenance windows, without causing additional delays and outages by ordering wrong spare parts which may even harm the machines. This applies for mostly any technician services provided across the globe. Especially for those dealing with a high amount of available spare parts.
+- It is coded in [NodeJS](https://nodejs.org/en/)
+- Can be deployed anywhere and I suggest to do it in the  [SAP Cloud Platform](https://cloudplatform.sap.com).  
+- It is integrated with [SAP Business One](https://www.sap.com/uk/products/business-one.html) using the [Service Layer](https://www.youtube.com/watch?v=zaF_i7x9-s0&list=PLMdHXbewhZ2QsgYSICRQuoL8lkoEHjNzS&index=22) or [SAP Business ByDesign](https://www.sap.com/products/business-bydesign.html) using the [OData API](https://blogs.sap.com/2015/03/10/odata-for-sap-business-bydesign-analytics/).
+- It consumes the [SAP Leonardo APIs](https://api.sap.com/package/SAPLeonardoMLFunctionalServices?section=Artifacts) available in the SAP API Business Hub.
 
-![avatar](https://jam4.sapjam.com/profile/6DWIDrLEPbPP75kn8Y3ezL/documents/kR5iWagKZlC5FE1gMPQR8X/thumbnail?max_x=1200&max_y=1200)
+## Installation in the Cloud
 
-Did you know, that an average car has about 30.000 parts? 
+Clone this repository
 
-After tracking down the root cause of a malfunctional machine to a broken spare part the quest starts to tell what this spare part really is and finally finds it in the inventory of available spare parts. Since there are tens of thousands of spare parts in industrial machines, and hundreds of different brands and models, it is impossible for technicians to remember them all, in order to identify any given spare part. 
-
-With the new spare part recognition prototype inside the SAP Business One Service App, the broken spare parts will be captured with a mobile device and analyzed by SAP’s next gen machine learning capabilities throughout SAP Leonardo within seconds to find the right inventory item to order.
-
-![avatar](https://jam4.sapjam.com/profile/6DWIDrLEPbPP75kn8Y3ezL/documents/eK7TpC2RuWuBdfBAI4Hlm1/thumbnail?max_x=1200&max_y=1200)
-
-The app prototype indicates that this spare part is a pinion gear with a 97% match. 
-
-After suggesting possible replacements for the broken parts, a sales order will be created and signed off to close the service ticket.
-
-With the help of image recognition, service engineers have the right spare part at their fingertips and new employees can be onboarded much faster without the need of learning spare parts by heart. 
-
-As more and more companies empower their employees with smart mobile devices and intelligent enterprise apps during their worktime, the human error gets mitigated and the overall performance is significantly increasing.
-
-## Installation Guide
-
-### Server
-
-#### run main.py to start up server
-
-[python3]
-depend on requests, tornado, urllib3
-
-``` bash
-pip install -r requirements.txt
-python main.py
+```sh
+$ git clone https://github.com/CyranoChen/spare-parts-recognition-scp
 ```
 
-#### run server via docker-compose
+Give a name to your app on the [manifest.yml](manifest.yml)
 
-``` bash
-docker-compose up -d spare-parts-recognition
+Then set the global variables configuration in [manifest]
+It also requires a [SAP Leonardo API Key](https://api.sap.com/api/sap_service_ticketing_classification_api/overview) which you can retrive **AFTER** login into the API Hub and clicking on GET API KEY.
+
+```sh
+LEON_APIKEY: <-- YOUR OWN LEONARDO API KEY-->
+LEON_IMAGEFEATUREEXTRACTION_APIURL: https://sandbox.api.sap.com/ml/imagefeatureextraction/feature-extraction
+LEON_SIMILARITYSCORING_APIURL: https://sandbox.api.sap.com/ml/similarityscoring/similarity-scoring
 ```
+
+This project depends on an instance of B1 HANA environment and set the adminstrator account for accessing the service layer.
+
+```sh
+B1_SERVICELAYER_APIURL: https://<B1 hostname>:50000/b1s/v1 
+B1_USERNAME: <username> 
+B1_PASSWORD: <password>
+B1_COMPANYDB: <companydb>
+```
+
+This project also integrate with an instance of ByDesign and set the adminstrator account for accessing the odata api of product data.
+
+The odata api [configuration profile](vmumaterial.xml) should be imported by custom odata services.
+
+```sh
+BYD_TENANT_HOSTNAME: https://<ByDesign Tenant>/sap/byd/odata/cust/v1 
+BYD_USERNAME: <username> 
+BYD_PASSWORD: <password>
+```
+
+From the root directory, using the [Cloud Foundry CLI](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html) push your app to the SAP CP Cloud Foundry
+
+```sh
+$ cf push
+or
+$ cf push --random-route
+–random-route will avoid name collisions with others that deploy this same app on SCP. You can also choose your own app name by changing the manifest.yml file.
+```
+
+Access the app from the URL route shown in the terminal
+
+## Demo app
+
+There is a sample implementation [running here](https://spare-parts-recognition.cfapps.eu10.hana.ondemand.com/). Be advised that the B1 System Backend is not running 24/7
+
+## License
+
+This code snippet is released under the terms of the MIT license. See [LICENSE](LICENSE) for more information or see https://opensource.org/licenses/MIT.
