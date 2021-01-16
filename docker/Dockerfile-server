@@ -2,7 +2,7 @@ FROM tensorflow/tensorflow:2.4.0
 
 LABEL maintainer="Cyrano Chen <cyrano.chen@sap.com>"
 
-EXPOSE 8080 8443
+EXPOSE 8080
 
 WORKDIR /app
 COPY ./requirements.txt /app/

@@ -49,12 +49,11 @@ def extract_feature_vector(tensor):
     x = tf.expand_dims(tensor, axis=0)
     x = tf.cast(x, tf.float32)
 
-    if settings.CNN_BACKBONE == 'Densenet':
-        x = k.applications.densenet.preprocess_input(x)
-    elif settings.CNN_BACKBONE == 'Efficientnet':
-        x = k.applications.efficientnet.preprocess_input(x)
-    else:
+    if settings.CNN_BACKBONE == 'Inception':
         x = k.applications.inception_v3.preprocess_input(x)
+    else:
+        x = k.applications.imagenet_utils.preprocess_input(x, mode='torch')
+
     print('input shape:', x.shape)
 
     start = time()

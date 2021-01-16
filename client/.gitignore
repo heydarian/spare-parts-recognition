@@ -61,7 +61,5 @@ typings/
 .next
 
 # local image
-env
 app/label/pictures/*
 app/sample/*
-yaml

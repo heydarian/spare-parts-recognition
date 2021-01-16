@@ -181,8 +181,7 @@ if __name__ == "__main__":
     app = tornado.web.Application(handlers=[('/api/recognize', MainHandler),
                                             ('/api/generate', GenerateHandler),
                                             ('/api/extract', ExtractHandler),
-                                            (r"/labels/(.*)", tornado.web.StaticFileHandler,
-                                             {"path": r"./label/b1_items/"})])
+                                            (r'/labels/(.*)', tornado.web.StaticFileHandler, {'path': r'./labels/b1_items/'})])
 
     # https_server = tornado.httpserver.HTTPServer(app, ssl_options={
     #     "certfile": "./cert/server.crt",
