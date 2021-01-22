@@ -1,26 +1,23 @@
 applications:
   - name: spare-parts-recognition-server
-    memory: 2G
+    memory: 512M
     disk_quota: 2G
     instances: 1
-    path: ../server
-    buildpacks:
-      - https://github.com/cloudfoundry/python-buildpack.git
-    command: python main.py
+    docker: 
+      image: cyranochen/spare-parts-recognition-server:latest
   - name: spare-parts-recognition-client
     memory: 128M
     disk_quota: 256M
     instances: 1
-    path: ../client
-    buildpacks: 
-      - https://github.com/cloudfoundry/nodejs-buildpack.git
+    docker: 
+      image: cyranochen/spare-parts-recognition-client:latest
     env:
-        B1_SERVICELAYER_APIURL: https://{{server-b1hana}}/b1s/v1
+        B1_SERVICELAYER_APIURL: 
         B1_USERNAME: 
         B1_PASSWORD: 
         B1_COMPANYDB: 
-        BYD_TENANT_HOSTNAME: https://{{server-byd}}/sap/byd/odata/cust/v1
-        BYD_USERNAME:  
+        BYD_TENANT_HOSTNAME: 
+        BYD_USERNAME: 
         BYD_PASSWORD: 
         GENERAL_THRESHOLD_SIMILAR: 0.65 # similarity threshold 0~1
         GENERAL_THRESHOLD_NUM_SIMILAR: 3 # default return 3 condinates
