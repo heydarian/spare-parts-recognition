@@ -52,6 +52,8 @@ class MainHandler(tornado.web.RequestHandler):
                 img = content
 
             logging.info('input: ' + file_name)
+            if not os.path.exists(settings.SAMPLE_FILEPATH):
+                os.mkdir(settings.SAMPLE_FILEPATH)
             with open(settings.SAMPLE_FILEPATH + file_name, 'wb') as f:
                 f.write(img)
 
@@ -145,6 +147,8 @@ class ExtractHandler(tornado.web.RequestHandler):
                 img = content
 
             logging.info('input: ' + file_name)
+            if not os.path.exists(settings.SAMPLE_FILEPATH):
+                os.mkdir(settings.SAMPLE_FILEPATH)
             with open(settings.SAMPLE_FILEPATH + file_name, 'wb') as f:
                 f.write(img)
 
