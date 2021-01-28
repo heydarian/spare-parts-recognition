@@ -1,0 +1,10 @@
+applications:
+  - name: spare-parts-recognition-server
+    memory: 2G
+    disk_quota: 2G
+    instances: 1
+    path: ../server
+    random-route: true
+    buildpacks:
+      - https://github.com/cloudfoundry/python-buildpack.git
+    command: python main.py
