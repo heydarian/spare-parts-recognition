@@ -1,4 +1,4 @@
-# Spare Part Recognition - A Simple Image Classification Integration between SAP Business One / ByDesign and the pretrained ImageNet dataset leveraging Tensorflow
+# Spare Part Recognition - A Simple Image Classification Integration between SAP Business One / ByDesign
 
 ![avatar](https://jam4.sapjam.com/profile/vQ2WGFrz1l1cmyPIZX6G8c/documents/exUx6J98mB0A3RqbVkE0W1/thumbnail?max_x=1200&max_y=1200)
 
@@ -25,7 +25,7 @@ $ git clone https://github.com/CyranoChen/spare-parts-recognition-scp
 
 Give a name to client and server app in the manifest.yml file inside both folders
 
-From the server directory, using the [Cloud Foundry CLI](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html) push your app to the SAP CP Cloud Foundry
+From the **server** directory, using the [Cloud Foundry CLI](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html) push your app to the SAP BTP Cloud Foundry
 
 ```sh
 $ cf push
@@ -34,6 +34,11 @@ $ cf push --random-route
 –random-route will avoid name collisions with others that deploy this same app on SCP. You can also choose your own app name by changing the manifest.yml file.
 ```
 Copy the URL route shown in the terminal as required for the CNN_SERVER_ENDPOINT variable
+
+The Tensorflow installation requires 2 GB of memory, you can decrease the amount of assigned memory **after** the app has been pushed, by using the command:
+```sh
+$ cf scale spare-parts-recognition-server -m 1G
+```
 
 Then set the global variables configuration in the client [manifest.yml](https://github.com/CyranoChen/spare-parts-recognition/blob/master/client/manifest.yml)
 
@@ -62,7 +67,7 @@ Paste the URL route shown from the server and append "/api"
 CNN_SERVER_ENDPOINT: <server app address>/api
 ```
 
-From the client directory, using the [Cloud Foundry CLI](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html) push your app to the SAP CP Cloud Foundry
+From the **client** directory, using the [Cloud Foundry CLI](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html) push your app to the SAP BTP Cloud Foundry
 
 ```sh
 $ cf push
