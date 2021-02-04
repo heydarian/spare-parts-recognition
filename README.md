@@ -23,7 +23,7 @@ Clone this repository
 $ git clone https://github.com/CyranoChen/spare-parts-recognition-scp
 ```
 
-Give a name to client and server app in the manifest.yml file inside both folders
+Optional: Give a name to client and server app in the manifest.yml file inside both folders
 
 From the **server** directory, using the [Cloud Foundry CLI](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html) push your app to the SAP BTP Cloud Foundry
 
