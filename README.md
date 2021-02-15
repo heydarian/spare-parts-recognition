@@ -22,7 +22,7 @@ git lfs install
 Clone this repository
 
 ```sh
-git clone https://github.com/CyranoChen/spare-parts-recognition-scp
+git clone https://github.com/CyranoChen/spare-parts-recognition
 ```
 
 Optional: Give a name to client and server app in the manifest.yml file inside both folders
@@ -31,20 +31,16 @@ From the **server** directory, using the [Cloud Foundry CLI](https://docs.cloudf
 
 ```sh
 $ cf push
-or
-$ cf push --random-route
-–random-route will avoid name collisions with others that deploy this same app on SCP. You can also choose your own app name by changing the manifest.yml file.
 ```
-
-Copy the URL route shown in the terminal as required for the CNN_SERVER_ENDPOINT variable
 
 The Tensorflow installation requires 2 GB of memory, you can decrease the amount of assigned memory **after** the app has been pushed, by using the command:
 
 ```sh
 cf scale spare-parts-recognition-server -m 1G
 ```
+Copy the URL route shown in the terminal as required for the CNN_SERVER_ENDPOINT variable
 
-Then set the global variables configuration in the client [manifest.yml](https://github.com/CyranoChen/spare-parts-recognition/blob/master/client/manifest.yml)
+From the **client** directory, set the global variables configuration in the [manifest.yml](https://github.com/CyranoChen/spare-parts-recognition/blob/master/client/manifest.yml)
 
 This project depends on an instance of B1 HANA environment and set the adminstrator account for accessing the service layer.
 
